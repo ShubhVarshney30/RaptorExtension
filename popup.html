@@ -1,11 +1,30 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>Tab Switch Counter</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tab Monitor</title>
+  <link rel="stylesheet" href="popup.css" />
 </head>
 <body>
-  <h2>You have switched tabs:</h2>
-  <p id="count">Loading...</p>
+  <div class="container">
+    <h1>Tab Monitor</h1>
+    
+    <div class="counter-box">
+      <p class="counter-text">Tabs switched in last 20 min:</p>
+      <p id="tabCount" class="counter-number">0</p>
+      <p id="statusMessage" class="status-message normal">You’re staying focused!</p>
+    </div>
+
+    <div class="toggle-section">
+      <label class="switch">
+        <input type="checkbox" id="toggleAlert" checked />
+        <span class="slider"></span>
+      </label>
+      <span class="toggle-label">Enable Alerts</span>
+    </div>
+  </div>
+
   <script src="popup.js"></script>
 </body>
 </html>

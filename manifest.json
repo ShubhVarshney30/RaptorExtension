@@ -1,13 +1,23 @@
 {
     "manifest_version": 3,
-    "name": "Tab Switch Counter",
+    "name": "Winners",
     "version": "1.0",
     "description": "Counts how many times you switch tabs",
-    "permissions": ["tabs", "storage", "notifications"],
+    "permissions": ["tabs", "storage", "notifications", "alarms"],
     "background": {
       "service_worker": "background.js"
     },
     "action": {
       "default_popup": "popup.html"
-    }
+    },
+    "icons":{
+      "48":"icon.png"
+    },
+    "content_scripts":[
+      {
+       " matches":["<all_urls>"],
+       "js":["timeWarp.js"],
+       "run_at":"document_idle"
+      }
+    ]
   }

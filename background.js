@@ -1,35 +1,57 @@
-let tabSwitchCount = 0;
-let hasShownNotification = false;
+let tabSwitchTimestamps = [];
+const TIME_WINDOW_MINUTES = 20;
+const MAX_TIME = TIME_WINDOW_MINUTES * 60 * 1000; // 20 minutes in ms
 
-// Load saved count on startup
-chrome.runtime.onStartup.addListener(() => {
-  chrome.storage.local.get(["switchCount", "hasShownNotification"], (result) => {
-    tabSwitchCount = result.switchCount || 0;
-    hasShownNotification = result.hasShownNotification || false;
+// Default alerts enabled
+chrome.runtime.onInstalled.addListener(() => {
+  chrome.storage.local.set({
+    tabSwitchCount: 0,
+    alertsEnabled: true
   });
 });
 
-// On tab switch
+// Listen for tab switching (focus changes)
 chrome.tabs.onActivated.addListener(() => {
-  tabSwitchCount++;
-  console.log("Tab switched. Total:", tabSwitchCount);
+  const now = Date.now();
 
-  // Check if we should show the notification
-  if (tabSwitchCount > 10 && !hasShownNotification) {
-    // Show notification asking if user is alright
-    chrome.notifications.create({
-      type: 'basic',
-      iconUrl: 'icon.png', // You'll need to add an icon file
-      title: 'Safety Check',
-      message: 'Are you alright? You\'ve switched tabs quite a bit.'
+  // Remove old timestamps
+  tabSwitchTimestamps = tabSwitchTimestamps.filter(
+    ts => now - ts < MAX_TIME
+  );
+
+  // Add new timestamp
+  tabSwitchTimestamps.push(now);
+
+  // Save current count
+  const count = tabSwitchTimestamps.length;
+  chrome.storage.local.set({ tabSwitchCount: count });
+
+  // Optional: trigger notification if alerts are enabled and count exceeds threshold
+  if (count > 10) {
+    chrome.storage.local.get('alertsEnabled', (data) => {
+      if (data.alertsEnabled) {
+        showNotification();
+      }
     });
-    
-    hasShownNotification = true;
-    
-    // Save notification state
-    chrome.storage.local.set({ hasShownNotification: true });
   }
+});
 
-  // Save to local storage
-  chrome.storage.local.set({ switchCount: tabSwitchCount });
+// Show notification
+function showNotification() {
+  chrome.notifications.create({
+    type: 'basic',
+    iconUrl: 'icon.png',
+    title: 'Tab Monitor Alert',
+    message: 'Please stop — too many tab switches in 20 minutes.',
+    priority: 2
+  });
+}
+
+// Optional: clear storage every X hours to prevent bloat
+chrome.alarms.create('cleanup', { periodInMinutes: 60 });
+chrome.alarms.onAlarm.addListener((alarm) => {
+  if (alarm.name === 'cleanup') {
+    tabSwitchTimestamps = [];
+    chrome.storage.local.set({ tabSwitchCount: 0 });
+  }
 });
