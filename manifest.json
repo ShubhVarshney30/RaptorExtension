@@ -3,7 +3,7 @@
   "name": "Winners",
   "version": "1.0",
   "description": "Counts how many times you switch tabs and helps maintain focus.",
-  "permissions": ["tabs", "storage", "notifications", "alarms"],
+  "permissions": ["tabs", "storage", "notifications", "alarms","windows","activeTab","idle"],
   "host_permissions": ["<all_urls>"],
   "background": {
     "service_worker": "background.js"
