@@ -19,6 +19,11 @@
       "matches": ["<all_urls>"],
       "js": ["timeWarp.js"],
       "run_at": "document_idle"
+    },
+    {
+      "matches": ["<all_urls>"],
+      "js": ["focusBlocker.js"],
+      "run_at": "document_start"
     }
   ],
   "web_accessible_resources": [
@@ -31,7 +36,9 @@
       "settings.html",
       "settings.js",
       "settings.css",
-      "alert.mp3"
+      "alert.mp3",
+      "block.html",
+      "style.css"
     ],
     "matches": ["<all_urls>"]
   }

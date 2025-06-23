@@ -13,7 +13,7 @@
     <div class="counter-box">
       <p class="counter-text">Tabs switched in last 20 min:</p>
       <p id="tabCount" class="counter-number">0</p>
-      <p id="statusMessage" class="status-message normal">You’re staying focused!</p>
+      <p id="statusMessage" class="status-message normal">You're staying focused!</p>
     </div>
 
     <div class="toggle-section">
@@ -36,6 +36,20 @@
       <a href="stats.html" target="_blank" style="text-decoration: none; color: #007BFF;">
         📊 View Focus Stats
       </a>
+    </div>
+
+    <!-- Focus Mode Section -->
+    <div id="focus-mode-section" style="margin-top: 20px; border-top: 1px solid #ccc; padding-top: 10px;">
+      <h3>Focus Mode</h3>
+      <form id="focus-form">
+        <label for="focus-url">Website URL:</label><br>
+        <input type="url" id="focus-url" name="focus-url" placeholder="https://example.com" required style="width: 100%;"><br><br>
+        <label for="focus-duration">Duration (minutes):</label><br>
+        <input type="number" id="focus-duration" name="focus-duration" min="1" required style="width: 100%;"><br><br>
+        <button type="submit" id="start-focus-btn">Start Focus</button>
+        <button type="button" id="stop-focus-btn" style="display:none; margin-left: 10px;">Stop Focus</button>
+      </form>
+      <div id="focus-status" style="margin-top: 10px;"></div>
     </div>
   </div>
 
