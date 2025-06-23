@@ -74,3 +74,67 @@ chrome.alarms.onAlarm.addListener((alarm) => {
     chrome.storage.local.set({ tabSwitchCount: 0 });
   }
 });
+
+
+
+
+// shubhCodes
+let currentTabId = null;
+let currentWindowId = null;
+let startTime = null;
+let tabActiveTimes = {};
+
+function startTracking(tabId, windowId) {
+  currentTabId = tabId;
+  currentWindowId = windowId;
+  startTime = Date.now();
+}
+
+function stopTracking() {
+  if (currentTabId !== null && startTime !== null) {
+    const duration = Date.now() - startTime;
+    if (!tabActiveTimes[currentTabId]) {
+      tabActiveTimes[currentTabId] = 0;
+    }
+    tabActiveTimes[currentTabId] += duration;
+    console.log(`Tab ${currentTabId} active time: ${tabActiveTimes[currentTabId]} ms`);
+  }
+  startTime = null;
+}
+
+// When active tab changes
+chrome.tabs.onActivated.addListener(activeInfo => {
+  stopTracking();
+  chrome.windows.getLastFocused({ populate: true }, window => {
+    if (window.focused) {
+      startTracking(activeInfo.tabId, window.id);
+    }
+  });
+});
+
+// When window focus changes
+chrome.windows.onFocusChanged.addListener(windowId => {
+  if (windowId === chrome.windows.WINDOW_ID_NONE) {
+    stopTracking(); // user unfocused the browser
+  } else {
+    chrome.tabs.query({ active: true, windowId }, tabs => {
+      if (tabs.length > 0) {
+        startTracking(tabs[0].id, windowId);
+      }
+    });
+  }
+});
+
+// Optional: handle idle state
+chrome.idle.onStateChanged.addListener(state => {
+  if (state === "idle" || state === "locked") {
+    stopTracking();
+  } else if (state === "active") {
+    chrome.windows.getLastFocused({ populate: true }, window => {
+      const activeTab = window.tabs.find(tab => tab.active);
+      if (activeTab) {
+        startTracking(activeTab.id, window.id);
+      }
+    });
+  }
+});

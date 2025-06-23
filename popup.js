@@ -37,3 +37,14 @@ function updateUI(count) {
     statusMessage.classList.add('normal');
   }
 }
+
+
+chrome.tabs.query({ active: true, currentWindow: true }, tabs => {
+  const currentTabId = tabs[0].id.toString();
+  chrome.storage.local.get("tabActiveTimes", data => {
+    const times = data.tabActiveTimes || {};
+    const timeSpent = times[currentTabId] || 0;
+    document.getElementById("time-display").textContent = 
+      `Time on this tab: ${(timeSpent / 1000).toFixed(2)} seconds`;
+  });
+});
