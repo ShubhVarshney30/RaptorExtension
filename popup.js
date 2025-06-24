@@ -47,7 +47,7 @@ function showNudge() {
 
   const nudge = document.createElement("div");
   nudge.id = "warp-nudge";
-  nudge.innerText = "You've been scrolling for a while… Slow down? 💫";
+  nudge.innerText =  "You've been switching rapidly!! What’s your goal here? 💫";
   nudge.style.cssText = `
     position: fixed;
     bottom: 30px;
