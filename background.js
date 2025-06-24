@@ -76,8 +76,7 @@ chrome.alarms.onAlarm.addListener((alarm) => {
 });
 
 
-
-
+// timeCode
 // shubhCodes
 let currentTabId = null;
 let currentWindowId = null;
@@ -93,13 +92,18 @@ function startTracking(tabId, windowId) {
 function stopTracking() {
   if (currentTabId !== null && startTime !== null) {
     const duration = Date.now() - startTime;
-    if (!tabActiveTimes[currentTabId]) {
-      tabActiveTimes[currentTabId] = 0;
-    }
-    tabActiveTimes[currentTabId] += duration;
-    console.log(`Tab ${currentTabId} active time: ${tabActiveTimes[currentTabId]} ms`);
+    chrome.tabs.get(currentTabId, (tab) => {
+      const url = tab && tab.url ? tab.url : 'Unknown URL';
+      if (!tabActiveTimes[currentTabId]) {
+        tabActiveTimes[currentTabId] = { time: 0, url };
+      }
+      tabActiveTimes[currentTabId].time += duration;
+      tabActiveTimes[currentTabId].url = url; // Always update to latest url
+      console.log(`Tab URL: ${url} active time: ${tabActiveTimes[currentTabId].time/1000} s`);
+      chrome.storage.local.set({ tabActiveTimes });
+      startTime = null;
+    });
   }
-  startTime = null;
 }
 
 // When active tab changes
@@ -138,3 +142,4 @@ chrome.idle.onStateChanged.addListener(state => {
     });
   }
 });
+

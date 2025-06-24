@@ -56,6 +56,27 @@ chrome.storage.local.get([
   });
 });
 
-
+// Load and display tabActiveTimes in table
+chrome.storage.local.get('tabActiveTimes', (data) => {
+  const tabTimes = data.tabActiveTimes || {};
+  const tbody = document.getElementById('tabTimesTableBody');
+  tbody.innerHTML = '';
+  Object.values(tabTimes).forEach(({ url, time }) => {
+    const tr = document.createElement('tr');
+    const tdUrl = document.createElement('td');
+    let domain = url;
+    try {
+      domain = new URL(url).hostname;
+    } catch (e) {
+      // fallback to original url if parsing fails
+    }
+    tdUrl.textContent = domain;
+    const tdTime = document.createElement('td');
+    tdTime.textContent = ((time / 1000)/60).toFixed(2);
+    tr.appendChild(tdUrl);
+    tr.appendChild(tdTime);
+    tbody.appendChild(tr);
+  });
+});
 
 // shubhCodes

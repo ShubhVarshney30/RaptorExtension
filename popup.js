@@ -32,19 +32,51 @@ function updateUI(count) {
     statusMessage.classList.remove('normal');
     statusMessage.classList.add('warning');
   } else {
-    statusMessage.textContent = 'You’re staying focused!';
+    statusMessage.textContent = 'Youre staying focused!';
     statusMessage.classList.remove('warning');
     statusMessage.classList.add('normal');
   }
 }
 
-
 chrome.tabs.query({ active: true, currentWindow: true }, tabs => {
   const currentTabId = tabs[0].id.toString();
+  let startTime = Date.now();
+  let totalTimeFromStorage = 0;
+  
+  // Get total time from storage
   chrome.storage.local.get("tabActiveTimes", data => {
     const times = data.tabActiveTimes || {};
-    const timeSpent = times[currentTabId] || 0;
-    document.getElementById("time-display").textContent = 
-      `Time on this tab: ${(timeSpent / 1000).toFixed(2)} seconds`;
+    const tabData = times[currentTabId];
+    if (tabData) {
+      totalTimeFromStorage = tabData.time || 0;
+    }
+    
+    // Update display every second
+    function updateTimeDisplay() {
+      const currentActiveTime = Date.now() - startTime;
+      const totalTime = totalTimeFromStorage + currentActiveTime;
+      const totalSeconds = totalTime / 1000;
+      const minutes = Math.floor(totalSeconds / 60);
+      const seconds = Math.floor(totalSeconds % 60);
+      
+      document.getElementById("time-display").textContent = 
+        `Active: ${minutes}m ${seconds}s`;
+    }
+    
+    updateTimeDisplay();
+    setInterval(updateTimeDisplay, 1000);
   });
 });
+
+// chrome.storage.local.get(['tabActiveTimes', 'tabSwitchCount'], data => {
+//   const times = data.tabActiveTimes || {};
+//   let totalSeconds = Object.values(times).reduce((acc, val) => acc + val, 0);
+//   const switchCount = data.tabSwitchCount || 0;
+//   const totalMinutes = Math.floor(totalSeconds / 60);
+//   const totalHours = Math.floor(totalMinutes / 60);
+//   // totalSeconds %= 60;
+//   // totalMinutes %= 60;
+//   console.log(`Total time spent: ${totalHours} hours, ${totalMinutes} minutes, ${totalSeconds} seconds`);
+//   document.getElementById('time-display').textContent = 
+//     `Total time spent: ${totalHours}h ${totalMinutes}m ${totalSeconds}s`;
+// });
