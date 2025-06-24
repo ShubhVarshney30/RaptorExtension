@@ -31,44 +31,18 @@ function updateUI(count) {
     statusMessage.textContent = 'Please stop — too many tab switches.';
     statusMessage.classList.remove('normal');
     statusMessage.classList.add('warning');
-    showNudge();
+    chrome.notifications.create({
+      type: "basic",
+      iconUrl: "icon.png",
+      title: "Focus Reminder",
+      message: "Hey! Stay focused and avoid distractions.",
+      priority: 2
+    });
   } else {
     statusMessage.textContent = 'You’re staying focused!';
     statusMessage.classList.remove('warning');
     statusMessage.classList.add('normal');
   }
-}
-
-
-// onswitchcodenotification
-function showNudge() {
-  const existing = document.getElementById("warp-nudge");
-  if (existing) return;
-
-  const nudge = document.createElement("div");
-  nudge.id = "warp-nudge";
-  nudge.innerText =  "You've been switching rapidly!! What’s your goal here? 💫";
-  nudge.style.cssText = `
-    position: fixed;
-    bottom: 30px;
-    right: 30px;
-    background: rgba(0,0,0,0.75);
-    color: #fff;
-    padding: 12px 20px;
-    border-radius: 12px;
-    font-size: 14px;
-    z-index: 9999;
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 0.5s ease;
-    font-family: sans-serif;
-  `;
-  document.body.appendChild(nudge);
-  setTimeout(() => (nudge.style.opacity = 1), 100);
-  setTimeout(() => {
-    nudge.style.opacity = 0;
-    setTimeout(() => nudge.remove(), 1000);
-  }, 5000);
 }
 
 // focusmode code
